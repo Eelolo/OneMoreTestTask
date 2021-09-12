@@ -1,2 +1,17 @@
 {% block list %}
+{% load dict_using %}
+{% if message %}
+  <p class="message">{{ message }}</p>
+{% elif not deals_detail_info %}
+  <p class="message">No deals found</p>
+{% else %}
+  {% for currency in currencies_detail_info %}
+    <label>{{ currency }}</label>
+    <ul>
+      {% for currency_info in currencies_detail_info|get_item:currency %}
+        <li>{{ currency_info.deal_stage_name }} {{ currency_info.deal_stage_probability }}% – {{ currency_info.amount }}</li>
+      {% endfor %}
+    </ul>
+  {% endfor %}
+{% endif %}
 {% endblock %}
