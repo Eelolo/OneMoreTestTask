@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from django.views import View
 from .forms import FilterForm
+from .mixins import IndexPageViewMixin
 
 
-class IndexPageView(View):
-    def get(self, request):
+class IndexPageView(View, IndexPageViewMixin):
+    @staticmethod
+    def get(request):
         form = FilterForm()
 
         return render(
