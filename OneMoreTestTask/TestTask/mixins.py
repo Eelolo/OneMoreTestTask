@@ -27,7 +27,7 @@ class IndexPageViewMixin:
         for deal in deals:
             max_created_at = \
                 DealStatus.objects.filter(deal=deal).aggregate(Max('created_at'))['created_at__max']
-            deal_status = DealStatus.objects.get(deal=deal, created_at=max_created_at)
+            deal_status = DealStatus.objects.filter(deal=deal, created_at=max_created_at).first()
 
             deals_info.append({
                 'deal_name': deal.name,
