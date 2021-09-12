@@ -1,8 +1,24 @@
 from .models import DealStage
+from datetime import datetime, timedelta
 
 
 class FilterFormTools:
     """A class that serves as a set of methods for customizing the form"""
+
+    @staticmethod
+    def get_quarter(date):
+        return (date.month - 1) // 3 + 1
+
+    @staticmethod
+    def get_default_date_from(date):
+        return datetime(date.year, 3 * ((date.month - 1) // 3) + 1, 1)
+
+    @classmethod
+    def get_default_date_to(cls, date):
+        quarter = cls.get_quarter(date)
+        return datetime(
+            date.year + 3 * quarter // 12, 3 * quarter % 12 + 1, 1
+        ) + timedelta(days=-1)
 
     @staticmethod
     def get_deals_stages():
