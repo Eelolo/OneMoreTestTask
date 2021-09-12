@@ -62,3 +62,34 @@ class DealStage(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class DealStatus(models.Model):
+    """A model that represents detailed information of a deal"""
+
+    RUB = 'RUB'
+    USD = 'USD'
+    EUR = 'EUR'
+
+    CURRENCIES = [
+        (RUB, 'RUB'),
+        (USD, 'USD'),
+        (EUR, 'EUR'),
+    ]
+
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE, verbose_name='Deal', related_name='status')
+    amount = models.FloatField(
+        verbose_name='Amount of successful deal',
+        validators=[
+            MinValueValidator(0.01, message='Value must be greater than 0'),
+        ]
+    )
+    currency = models.CharField(
+        max_length=3, choices=CURRENCIES, default=RUB, verbose_name='Deal currency', db_index=True
+    )
+    deal_stage = models.ForeignKey(DealStage, on_delete=models.CASCADE, db_index=True)
+    estimated_date = models.DateField(verbose_name='Estimated date of deal completion', db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Time stamp', db_index=True)
+
+    def __str__(self):
+        return f'Deal id={self.id} on stage {self.deal_stage.name}'
