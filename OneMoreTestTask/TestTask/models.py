@@ -35,3 +35,13 @@ class Contact(models.Model):
 
     def __str__(self):
         return f'{self.first_Name} {self.last_Name} {self.patronymic}'
+
+
+class Deal(models.Model):
+    """A model that represents a deal with a contact"""
+
+    name = models.CharField(max_length=100, verbose_name='Deal name')
+    contact = models.ForeignKey(Contact, on_delete=models.CASCADE, verbose_name='Contact', related_name='deals')
+
+    def __str__(self):
+        return self.name
