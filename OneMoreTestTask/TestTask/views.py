@@ -10,4 +10,10 @@ class IndexPageView(View):
         return render(request, 'index.html', {'form': form})
 
     def post(self, request):
-        pass
+        form = FilterForm()
+        deals_info = self.get_detailed_info(request)
+
+        return render(
+            request, 'index.html',
+            {'form': form, 'deals_detail_info': deals_info,}
+        )

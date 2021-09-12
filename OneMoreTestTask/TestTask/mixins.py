@@ -1,5 +1,41 @@
-from .models import DealStage
+from .models import Deal, DealStatus, DealStage
+from django.db.models import Max
 from datetime import datetime, timedelta
+
+
+class IndexPageViewMixin:
+    """A class that serves to separate logic and view"""
+
+    @staticmethod
+    def get_deals_info(deals):
+        """Deals info structure: [{}, {}, {}]. Dictionary for each deal"""
+
+        deals_info = []
+
+        for deal in deals:
+            max_created_at = \
+                DealStatus.objects.filter(deal=deal).aggregate(Max('created_at'))['created_at__max']
+            deal_status = DealStatus.objects.get(deal=deal, created_at=max_created_at)
+
+            deals_info.append({
+                'deal_name': deal.name,
+                'company_name': deal.contact.company,
+                'contact_fullname': str(deal.contact),
+                'amount': deal_status.amount,
+                'currency': deal_status.currency,
+                'deal_stage': deal_status.deal_stage,
+                'estimated_date': deal_status.estimated_date,
+                'created_at': deal_status.created_at.strftime("%Y-%m-%d %H:%M"),
+            })
+
+        return deals_info
+
+    @classmethod
+    def get_detailed_info(cls, request):
+        deals = Deal.objects.all()
+        deals_info = cls.get_deals_info(deals)
+
+        return deals_info
 
 
 class FilterFormTools:
