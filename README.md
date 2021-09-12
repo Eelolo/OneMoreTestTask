@@ -4,6 +4,7 @@ The project is a minimalistic system of accounting for the work of employees wit
 
 ![image](https://user-images.githubusercontent.com/75232682/132970725-27dc7c0b-15b2-4a4b-95f2-9d33a18171ee.png)
 
+# Setup:
 ### Create Python virtual environment 
 ```
 python3 -m venv venv
