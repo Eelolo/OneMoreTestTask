@@ -19,4 +19,5 @@ class FilterForm(forms.Form):
     deal_stages = forms.MultipleChoiceField(
         choices=tools.get_deals_stages(),
         widget=forms.SelectMultiple(attrs={'class': 'custom-select'}),
+        initial=tools.get_default_deals_stages()
     )

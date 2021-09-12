@@ -27,3 +27,7 @@ class FilterFormTools:
             stages.append((stage.id, f'{stage.name} {str(stage.probability)}%'))
 
         return stages
+
+    @staticmethod
+    def get_default_deals_stages():
+        return [stage.id for stage in DealStage.objects.all().filter(probability__gte=30)]
