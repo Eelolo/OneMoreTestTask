@@ -7,7 +7,10 @@ class IndexPageView(View):
     def get(self, request):
         form = FilterForm()
 
-        return render(request, 'index.html', {'form': form})
+        return render(
+            request, 'index.html',
+            {'form': form, 'message': 'Click the calculate button to see detailed information'}
+        )
 
     def post(self, request):
         form = FilterForm()
