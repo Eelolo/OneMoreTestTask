@@ -30,12 +30,41 @@ class IndexPageViewMixin:
 
         return deals_info
 
+    @staticmethod
+    def get_currencies_info(deals_info):
+        """
+        Currencies info structure:
+        {
+            'RUB': [{}, {}, {}],
+            'USD': [...],
+            'EUR': [...]
+        }
+        Lists of dictionaries for each currency. Each dict in lists for one deal
+        """
+        currencies_info = {
+            'RUB': [],
+            'USD': [],
+            'EUR': []
+        }
+
+        for currency in currencies_info:
+            for deal in deals_info:
+                if deal['currency'] == currency:
+                    currencies_info[currency].append({
+                        'deal_stage_name': deal['deal_stage'].name,
+                        'deal_stage_probability': deal['deal_stage'].probability,
+                        'amount': deal['amount']
+                    })
+
+        return currencies_info
+
     @classmethod
     def get_detailed_info(cls, request):
         deals = Deal.objects.all()
         deals_info = cls.get_deals_info(deals)
+        currencies_info = cls.get_currencies_info(deals_info)
 
-        return deals_info
+        return deals_info, currencies_info
 
 
 class FilterFormTools:

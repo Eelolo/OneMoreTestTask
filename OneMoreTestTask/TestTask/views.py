@@ -11,9 +11,12 @@ class IndexPageView(View):
 
     def post(self, request):
         form = FilterForm()
-        deals_info = self.get_detailed_info(request)
+        deals_info, currencies_info = self.get_detailed_info(request)
 
         return render(
             request, 'index.html',
-            {'form': form, 'deals_detail_info': deals_info,}
+            {
+                'form': form, 'deals_detail_info': deals_info,
+                'currencies_detail_info': currencies_info
+            }
         )
