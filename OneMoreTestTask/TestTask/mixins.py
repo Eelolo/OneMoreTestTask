@@ -81,8 +81,8 @@ class IndexPageViewMixin:
         return deals_info, currencies_info
 
 
-class FilterFormTools:
-    """A class that serves as a set of methods for customizing the form"""
+class FilterFormMixin:
+    """A class that serves to separate the form and the logic for its customization"""
 
     @staticmethod
     def get_quarter(date):

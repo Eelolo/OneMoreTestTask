@@ -1,23 +1,26 @@
 from django import forms
-from .mixins import FilterFormTools
+from .mixins import FilterFormMixin
 from datetime import datetime
 
 
-class FilterForm(forms.Form):
+class FilterForm(forms.Form, FilterFormMixin):
     """Form for filtering deals on the index page"""
-
-    tools = FilterFormTools()
 
     date_from = forms.DateField(
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-        initial=tools.get_default_date_from(datetime.now())
     )
     date_to = forms.DateField(
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-        initial=tools.get_default_date_to(datetime.now())
     )
     deal_stages = forms.MultipleChoiceField(
-        choices=tools.get_deals_stages(),
         widget=forms.SelectMultiple(attrs={'class': 'custom-select'}),
-        initial=tools.get_default_deals_stages()
     )
+
+    def __init__(self, *args, **kwargs):
+        super(FilterForm, self).__init__(*args, **kwargs)
+
+        self.fields['date_from'].initial = self.get_default_date_from(datetime.now())
+        self.fields['date_to'].initial = self.get_default_date_to(datetime.now())
+
+        self.fields['deal_stages'].choices = self.get_deals_stages()
+        self.fields['deal_stages'].initial = self.get_default_deals_stages()
