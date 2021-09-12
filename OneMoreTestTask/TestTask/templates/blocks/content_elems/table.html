@@ -1,2 +1,32 @@
 {% block table %}
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Deal name</th>
+      <th>Company name</th>
+      <th>Contact fullname</th>
+      <th>Amount</th>
+      <th>Currency</th>
+      <th>Deal stage</th>
+      <th>Estimated date of deal completion</th>
+      <th>Created at</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for deal in deals_detail_info %}
+      <tr>
+        <th>{{ forloop.counter }}</th>
+        <td>{{ deal.deal_name }}</td>
+        <td>{{ deal.company_name }}</td>
+        <td>{{ deal.contact_fullname }}</td>
+        <td>{{ deal.amount }}</td>
+        <td>{{ deal.currency }}</td>
+        <td>{{ deal.deal_stage }}</td>
+        <td>{{ deal.estimated_date }}</td>
+        <td>{{ deal.created_at }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}
