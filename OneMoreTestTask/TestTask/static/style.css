@@ -1,0 +1,25 @@
+.table th, td {
+  text-align: center;
+  vertical-align: middle !important;
+}
+
+button {
+  margin: 15px 0px 10px 0px !important;
+}
+
+option {
+  text-align: center;
+}
+
+ul {
+  margin: 0;
+}
+
+.message {
+  text-align: center;
+}
+
+#container-2 {
+  overflow-y: scroll;
+  max-height: 300px;
+}
