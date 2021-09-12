@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Company(models.Model):
@@ -42,6 +43,22 @@ class Deal(models.Model):
 
     name = models.CharField(max_length=100, verbose_name='Deal name')
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE, verbose_name='Contact', related_name='deals')
+
+    def __str__(self):
+        return self.name
+
+
+class DealStage(models.Model):
+    """A model that represents the stage of the deal and the probability of its success"""
+
+    name = models.CharField(max_length=100, verbose_name='Deal stage name', db_index=True)
+    probability = models.IntegerField(
+        verbose_name='Probability of success (0-100%)', db_index=True,
+        validators=[
+            MinValueValidator(0, message='Value must be greater than 0'),
+            MaxValueValidator(100, message='Value must be less than 100')
+        ]
+    )
 
     def __str__(self):
         return self.name
