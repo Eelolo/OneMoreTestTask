@@ -15,6 +15,10 @@ class IndexPageViewMixin:
         return deals.filter(status__deal_stage__in=stages)
 
     @staticmethod
+    def set_order(deals):
+        return deals.order_by('-status__deal_stage__probability', '-status__estimated_date')
+
+    @staticmethod
     def get_deals_info(deals):
         """Deals info structure: [{}, {}, {}]. Dictionary for each deal"""
 
@@ -70,6 +74,7 @@ class IndexPageViewMixin:
     def get_detailed_info(cls, request):
         deals = cls.get_deals_by_date_range(request.POST['date_from'], request.POST['date_to'])
         deals = cls.filter_deals_by_stages(deals, request.POST.getlist('deal_stages'))
+        deals = cls.set_order(deals)
         deals_info = cls.get_deals_info(deals)
         currencies_info = cls.get_currencies_info(deals_info)
 
