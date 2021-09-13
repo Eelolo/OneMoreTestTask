@@ -1,5 +1,5 @@
-from .models import Deal, DealStatus, DealStage
-from django.db.models import Max
+from .models import Deal, DealStatus, DealStage, Contact
+from django.db.models import Max, Prefetch
 from datetime import datetime, timedelta
 
 
@@ -7,29 +7,32 @@ class IndexPageViewMixin:
     """A class that serves to separate logic and view"""
 
     @staticmethod
-    def get_deals_by_date_range(date_from, date_to):
-        return Deal.objects.filter(status__estimated_date__range=[date_from, date_to])
+    def get_deals_statuses(date_from, date_to, stages):
+        deals = Deal.objects.all().prefetch_related(Prefetch('contact', queryset=Contact.objects.all().prefetch_related('company')))
+
+        deal_statuses = DealStatus.objects\
+            .prefetch_related(Prefetch('deal', queryset=deals))\
+            .prefetch_related(Prefetch('deal_stage'))\
+            .filter(estimated_date__range=[date_from, date_to])\
+            .filter(deal_stage__in=stages)\
+            .order_by('-created_at', '-deal_stage__probability', '-estimated_date')
+
+        return deal_statuses
 
     @staticmethod
-    def filter_deals_by_stages(deals, stages):
-        return deals.filter(status__deal_stage__in=stages)
-
-    @staticmethod
-    def set_order(deals):
-        return deals.order_by('-status__deal_stage__probability', '-status__estimated_date')
-
-    @staticmethod
-    def get_deals_info(deals):
+    def get_deals_info(deal_statuses):
         """Deals info structure: [{}, {}, {}]. Dictionary for each deal"""
 
         deals_info = []
+        for deal_status in deal_statuses:
+            deal = deal_status.deal
 
-        for deal in deals:
-            max_created_at = \
-                DealStatus.objects.filter(deal=deal).aggregate(Max('created_at'))['created_at__max']
-            deal_status = DealStatus.objects.filter(deal=deal, created_at=max_created_at).first()
+            # TODO: fix aggregation to avoid deals duplication
+            if any([True for info in deals_info if info['deal_id'] == deal.id]):
+                continue
 
             deals_info.append({
+                'deal_id': deal.id,
                 'deal_name': deal.name,
                 'company_name': deal.contact.company,
                 'contact_fullname': str(deal.contact),
@@ -72,10 +75,10 @@ class IndexPageViewMixin:
 
     @classmethod
     def get_detailed_info(cls, request):
-        deals = cls.get_deals_by_date_range(request.POST['date_from'], request.POST['date_to'])
-        deals = cls.filter_deals_by_stages(deals, request.POST.getlist('deal_stages'))
-        deals = cls.set_order(deals)
-        deals_info = cls.get_deals_info(deals)
+        deal_statuses = cls.get_deals_statuses(
+            request.POST['date_from'], request.POST['date_to'], request.POST.getlist('deal_stages')
+        )
+        deals_info = cls.get_deals_info(deal_statuses)
         currencies_info = cls.get_currencies_info(deals_info)
 
         return deals_info, currencies_info
